@@ -1,17 +1,17 @@
-# Middy http-error-handler middleware
+# Middy error-logger middleware
 
 <div align="center">
   <img alt="Middy logo" src="https://raw.githubusercontent.com/middyjs/middy/master/img/middy-logo.png"/>
 </div>
 
 <div align="center">
-  <p><strong>HTTP error handler middleware for the middy framework, the stylish Node.js middleware engine for AWS Lambda</strong></p>
+  <p><strong>Error logger middleware for the middy framework, the stylish Node.js middleware engine for AWS Lambda</strong></p>
 </div>
 
 <div align="center">
 <p>
-  <a href="http://badge.fury.io/js/%40middy%2Fhttp-error-handler">
-    <img src="https://badge.fury.io/js/%40middy%2Fhttp-error-handler.svg" alt="npm version" style="max-width:100%;">
+  <a href="http://badge.fury.io/js/%40middy%2Ferror-logger">
+    <img src="https://badge.fury.io/js/%40middy%2Ferror-logger.svg" alt="npm version" style="max-width:100%;">
   </a>
   <a href="https://snyk.io/test/github/middyjs/middy">
     <img src="https://snyk.io/test/github/middyjs/middy/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/middyjs/middy" style="max-width:100%;">
@@ -28,10 +28,13 @@
 </p>
 </div>
 
-Automatically handles uncaught errors that contain the properties `statusCode` (number) and `message` (string) and creates a proper HTTP response
-for them (using the message and the status code provided by the error object). We recommend generating these HTTP errors with the npm module [`http-errors`](https://npm.im/http-errors).
+Logs the error and propagates it to the next middleware.
 
-This middleware should be set as the last error handler.
+By default AWS Lambda does not print errors in the CloudWatch logs. If you want to make sure that you don't miss error logs, you would have to catch any error and pass it through `console.error` yourself.
+
+This middleware will take care to intercept any error and log it for you. The middleware is not going to interfere with other error handlers because it will propagate the error to the next error handler middleware without handling it. You just have to make sure to attach this middleware before any other error handling middleware.
+
+By default, the logging operate by using the `console.error` function. You can pass as a parameter a custom logger with additional logic if you need. It can be useful if you want to process the log by doing a http call or anything else.
 
 
 ## Install
@@ -39,35 +42,27 @@ This middleware should be set as the last error handler.
 To install this middleware you can use NPM:
 
 ```bash
-npm install --save @middy/http-error-handler
+npm install --save @middy/error-logger
 ```
 
 
 ## Options
 
-- `logger` (defaults to `console.error`) - a logging function that is invoked with the current error as an argument. You can pass `false` if you don't want the logging to happen.
+- `logger` property: a function (default `console.error`) that is used to define the logging logic. It receives the Error object as first and only parameter.
 
 
 ## Sample usage
 
 ```javascript
 const middy = require('@middy/core')
-const httpErrorHandler = require('@middy/http-error-handler')
+const errorLogger = require('@middy/error-logger')
 
 const handler = middy((event, context, cb) => {
-  throw new createError.UnprocessableEntity()
+  // your handler logic
 })
 
 handler
-  .use(httpErrorHandler())
-
-// when Lambda runs the handler...
-handler({}, {}, (_, response) => {
-  expect(response).toEqual({
-    statusCode: 422,
-    body: 'Unprocessable Entity'
-  })
-})
+  .use(errorLogger())
 ```
 
 

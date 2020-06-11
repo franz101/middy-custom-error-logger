@@ -7,23 +7,14 @@ module.exports = (opts) => {
 
   return ({
     onError: (handler, next) => {
-      // if there are a `statusCode` and an `error` field
-      // this is a valid http error object
-      if (handler.error.statusCode && handler.error.message) {
-        if (typeof options.logger === 'function') {
-          const awsRequestId = context.awsRequestId
-          const invocationEvent = JSON.stringify(event)
-          options.logger(["exception", { awsRequestId, invocationEvent,handler.context, error:handler.error }])
-        }
+      if (typeof options.logger === 'function') {
+        const context = handler.context
+          const awsRequestId = handler.context.awsRequestId
+          const invocationEvent = JSON.stringify(handler.event)
+               options.logger(["exception", { awsRequestId, invocationEvent,context, error:handler.error }])
+ }
 
-        handler.response = {
-          statusCode: handler.error.statusCode,
-          body: handler.error.message
-        }
-
-        return next()
-      }
-
+      // does not handle the error (keeps propagating it)
       return next(handler.error)
     }
   })

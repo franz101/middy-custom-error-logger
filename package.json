@@ -1,7 +1,7 @@
 {
-  "name": "@middy/http-error-handler",
+  "name": "@middy/error-logger",
   "version": "1.0.0",
-  "description": "Http error handler middleware for the middy framework",
+  "description": "Input and output logger middleware for the middy framework",
   "engines": {
     "node": ">=10"
   },
@@ -23,10 +23,9 @@
     "AWS",
     "AWS Lambda",
     "Middy",
-    "HTTP",
-    "API",
-    "Error Handler",
-    "Error Handling"
+    "Input",
+    "Output",
+    "Logger"
   ],
   "author": {
     "name": "Middy contributors",
@@ -41,10 +40,11 @@
   },
   "homepage": "https://github.com/middyjs/middy#readme",
   "peerDependencies": {
-    "@middy/core": ">=1.0.0-alpha"
+    "@middy/core": ">=1.0.0-alpha",
+    "aws-sdk": ">=2.221.1"
   },
   "dependencies": {
-    "http-errors": "^1.6.3"
+    "@types/node": "^10.0.8"
   },
   "devDependencies": {
     "@middy/core": "^1.0.0",

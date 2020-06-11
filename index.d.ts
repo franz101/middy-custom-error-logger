@@ -1,10 +1,9 @@
-import { HttpError } from 'http-errors'
-import middy from '@middy/core'
+import middy from '@middy/core';
 
-interface IHTTPErrorHandlerOptions {
-  logger?: (error: HttpError) => void;
+interface IErrorLoggerOptions {
+  logger?: (message: any) => void;
 }
 
-declare const httpErrorHandler : middy.Middleware<IHTTPErrorHandlerOptions, any, any>
+declare const errorLogger: middy.Middleware<IErrorLoggerOptions, any, any>
 
-export default httpErrorHandler
+export default errorLogger;
